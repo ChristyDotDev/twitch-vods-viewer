@@ -10,10 +10,10 @@ const apiClient = new ApiClient({authProvider});
 export async function getServerSideProps(context) {
     console.log("Server Side");
     const myUser = 604277296 //my own user as an example
-    const follows = await apiClient.helix.users.getFollows({user: myUser, first: 100})
+    const follows = await apiClient.helix.users.getFollowsPaginated({user: myUser, first: 100}).getAll()
     console.log(follows);
     const user_follows = []
-    follows.data.forEach(follow => {
+    follows.forEach(follow => {
         console.log(follow.followedUserDisplayName)
         user_follows.push({
             followedUserDisplayName: follow.followedUserDisplayName
