@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import {ApiClient} from 'twitch';
+import Image from 'next/image'
 import {ClientCredentialsAuthProvider} from 'twitch-auth';
 
 const clientId = process.env.TWITCH_CLIENT_ID;
@@ -19,7 +20,6 @@ export async function getServerSideProps(context) {
     for (const follow of follows) {
         const latestVod = await TwitchApi.getVodsForChannel(follow.followedUserId, token.access_token, 'day')
         if (latestVod.length > 0 && Date.now() - Date.parse(latestVod[0].created_at) < millisInDay) {
-
             user_follows.push({
                 followedUserDisplayName: follow.followedUserDisplayName,
                 followedUserId: follow.followedUserId,
@@ -31,6 +31,9 @@ export async function getServerSideProps(context) {
                     duration: latestVod[0].duration
                 }
             })
+            if(user_follows.length > 9){
+                break;
+            }
         }
     }
 
@@ -55,11 +58,13 @@ export default function Home({data, follows}) {
 
             <main>
                 <h1>
-                    Welcome to {data.name}
+                    VODs from the last day (first 10 for now)
                 </h1>
                 <ul>
                     {follows.map((follow) => (
-                        <li>{follow.followedUserDisplayName} - <a href={follow.vod.url}>{follow.vod.title}</a></li>
+                        <li>
+                            {follow.followedUserDisplayName} - <a href={follow.vod.url}>{follow.vod.title}</a>
+                        </li>
                     ))}
                 </ul>
             </main>
