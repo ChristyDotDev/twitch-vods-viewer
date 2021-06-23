@@ -8,29 +8,38 @@ const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const apiClient = new ApiClient({authProvider});
 import TwitchApi from "../lib/TwitchApi";
 
+const millisInDay = 86400000;
+
 export async function getServerSideProps(context) {
     console.log("Server Side");
     const myUser = 604277296 //my own user as an example
     const follows = await apiClient.helix.users.getFollowsPaginated({user: myUser, first: 100}).getAll()
     const user_follows = []
-    follows.forEach(follow => {
-        //console.log(follow.followedUserDisplayName + ": " + follow.followedUserId)
-        user_follows.push({
-            followedUserDisplayName: follow.followedUserDisplayName
-        })
-    })
-
     const token = await TwitchApi.getAccessToken();
-    console.log(token)
-    const videos = await TwitchApi.getVodsForChannel(13831909, token.access_token)
-    console.log(videos)
+    for (const follow of follows) {
+        const latestVod = await TwitchApi.getVodsForChannel(follow.followedUserId, token.access_token, 'day')
+        if (latestVod.length > 0 && Date.now() - Date.parse(latestVod[0].created_at) < millisInDay) {
+
+            user_follows.push({
+                followedUserDisplayName: follow.followedUserDisplayName,
+                followedUserId: follow.followedUserId,
+                vod: {
+                    created: latestVod[0].created_at,
+                    title: latestVod[0].title,
+                    url: latestVod[0].url,
+                    thumbnail: latestVod[0].thumbnail_url,
+                    duration: latestVod[0].duration
+                }
+            })
+        }
+    }
 
     return {
         props: {
             data: {
                 name: "Twitch Calendar"
             },
-            follows: user_follows
+            follows: user_follows,
         },
     }
 }
@@ -50,7 +59,7 @@ export default function Home({data, follows}) {
                 </h1>
                 <ul>
                     {follows.map((follow) => (
-                        <li>{follow.followedUserDisplayName}</li>
+                        <li>{follow.followedUserDisplayName} - <a href={follow.vod.url}>{follow.vod.title}</a></li>
                     ))}
                 </ul>
             </main>
