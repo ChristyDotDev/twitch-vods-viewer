@@ -1,53 +1,22 @@
 import Head from 'next/head'
-import {ApiClient} from 'twitch';
 import Image from 'next/image'
-import {ClientCredentialsAuthProvider} from 'twitch-auth';
 
-const clientId = process.env.TWITCH_CLIENT_ID;
-const clientSecret = process.env.TWITCH_CLIENT_SECRET;
-const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
-const apiClient = new ApiClient({authProvider});
 import TwitchApi from "../lib/TwitchApi";
-
-const millisInDay = 86400000;
 
 export async function getServerSideProps(context) {
     console.log("Server Side");
     const myUser = 604277296 //my own user as an example
-    const follows = await apiClient.helix.users.getFollowsPaginated({user: myUser, first: 100}).getAll()
-    const user_follows = []
     const token = await TwitchApi.getAccessToken();
-    for (const follow of follows) {
-        const latestVod = await TwitchApi.getVodsForChannel(follow.followedUserId, token.access_token, 'day')
-        if (latestVod.length > 0 && Date.now() - Date.parse(latestVod[0].created_at) < millisInDay) {
-            user_follows.push({
-                followedUserDisplayName: follow.followedUserDisplayName,
-                followedUserId: follow.followedUserId,
-                vod: {
-                    created: latestVod[0].created_at,
-                    title: latestVod[0].title,
-                    url: latestVod[0].url,
-                    thumbnail: latestVod[0].thumbnail_url,
-                    duration: latestVod[0].duration
-                }
-            })
-            if(user_follows.length > 9){
-                break;
-            }
-        }
-    }
-
+    const user_follows = await TwitchApi.getVodsForUserFollows(myUser, token)
+    console.log(user_follows)
     return {
         props: {
-            data: {
-                name: "Twitch Calendar"
-            },
             follows: user_follows,
         },
     }
 }
 
-export default function Home({data, follows}) {
+export default function Home({follows}) {
     return (
         <div>
             <Head>
@@ -58,12 +27,13 @@ export default function Home({data, follows}) {
 
             <main>
                 <h1>
-                    VODs from the last day (first 10 for now)
+                    VODs from the last day
                 </h1>
                 <ul>
                     {follows.map((follow) => (
                         <li>
                             {follow.followedUserDisplayName} - <a href={follow.vod.url}>{follow.vod.title}</a>
+                            <Image src={follow.vod.thumbnail} alt='Some text' width='128px' height='128px'/>
                         </li>
                     ))}
                 </ul>
