@@ -22,7 +22,7 @@ export default function Home({follows, token, clientId}) {
     return (
         <div>
             <Head>
-                <title>Stream Calendar</title>
+                <title>Twitch Videos</title>
                 <meta name="description" content="A calendar of streams"/>
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
