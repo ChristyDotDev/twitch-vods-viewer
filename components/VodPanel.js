@@ -1,7 +1,6 @@
 import TwitchApi from "../lib/TwitchApi";
 import React, {useState, useEffect} from 'react';
 import Image from 'next/image'
-import Link from 'next/link'
 import {Text} from "@chakra-ui/react";
 import {Box} from "@chakra-ui/react"
 
@@ -11,8 +10,6 @@ const imageWidth = 600
 const millisInDay = 86400000;
 
 export default function VodPanel(props) {
-    // TODO - useState/useEffect hooks
-    // TODO - split into own file
     const [vod, setVod] = useState({});
 
     useEffect(async () => {

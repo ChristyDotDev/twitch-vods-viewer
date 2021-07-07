@@ -4,9 +4,11 @@ import VodPanel from "../components/VodPanel"
 import { SimpleGrid } from "@chakra-ui/react"
 
 export async function getServerSideProps(context) {
-    const myUser = 604277296 //my own user as an example
+    const myUser = "ChristyC92"
     const token = await TwitchApi.getAccessToken();
-    const user_follows = await TwitchApi.getUserFollows(myUser, token.access_token)
+    const user = await TwitchApi.getUser(myUser, token.access_token);
+    const userId = user.data[0].id
+    const user_follows = await TwitchApi.getUserFollows(userId, token.access_token)
     return {
         props: {
             follows: user_follows,
