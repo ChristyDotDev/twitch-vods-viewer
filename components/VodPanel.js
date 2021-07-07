@@ -3,6 +3,7 @@ import React, {useState, useEffect} from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import {Text} from "@chakra-ui/react";
+import {Box} from "@chakra-ui/react"
 
 const imageHeight = 400
 const imageWidth = 600
@@ -29,17 +30,12 @@ export default function VodPanel(props) {
         return null
     }
     return (
-        <div>
-            <Link href={vod.url} cursor="pointer">
-                <Image src={vod.thumbnail_url} height={imageHeight} width={imageWidth}/>
-            </Link>
+        <Box maxW="xl" href={vod.url} cursor="pointer" borderWidth="md" borderRadius="lg" overflow="hidden">
+            <Image src={vod.thumbnail_url} height={imageHeight} width={imageWidth}/>
             <Text><b>{vod.user_name}</b> - {vod.title}</Text>
             <Text>
-                {vod.created_at}
-                {vod.view_count}
-                {vod.type}
-                {vod.duration}
+                {vod.created_at} - {vod.view_count} Views - {vod.duration}
             </Text>
-        </div>
+        </Box>
     );
 }
