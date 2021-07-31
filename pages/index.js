@@ -40,9 +40,7 @@ export default function Home({follows, token, clientId}) {
                     )}
                     {session && (
                         <div>
-                            <small>Signed in as</small>
-                            <br/>
-                            <strong>{session.user.email || session.user.name}</strong>
+                            <small>Signed in as {session.user.name || session.user.email}</small>
                         </div>
                     )}
                 </div>
