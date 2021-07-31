@@ -1,10 +1,12 @@
 import Head from 'next/head'
 import TwitchApi from "../lib/TwitchApi";
 import VodPanel from "../components/VodPanel"
-import { SimpleGrid } from "@chakra-ui/react"
+import {SimpleGrid} from "@chakra-ui/react"
+import {signIn, signOut, useSession} from 'next-auth/client'
+
 
 export async function getServerSideProps(context) {
-    const myUser = "ChristyC92"
+    const myUser = "ChristyC92" //FIXME - accept this from user?
     const token = await TwitchApi.getAccessToken();
     const user = await TwitchApi.getUser(myUser, token.access_token);
     const userId = user.data[0].id
@@ -19,6 +21,8 @@ export async function getServerSideProps(context) {
 }
 
 export default function Home({follows, token, clientId}) {
+    const [session] = useSession()
+
     return (
         <div>
             <Head>
@@ -28,13 +32,27 @@ export default function Home({follows, token, clientId}) {
             </Head>
 
             <main>
+                <div>
+                    {session ? (
+                        <button onClick={() => signOut()}>Signout</button>
+                    ) : (
+                        <button onClick={() => signIn()}>SignIn</button>
+                    )}
+                    {session && (
+                        <div>
+                            <small>Signed in as</small>
+                            <br/>
+                            <strong>{session.user.email || session.user.name}</strong>
+                        </div>
+                    )}
+                </div>
                 <h1>
                     VODs from the last day
                 </h1>
                 <SimpleGrid columns={[1, 2, 3]} spacing="40px">
-                {follows.map((follow) => (
-                    <VodPanel key={follow.to_id} channel={follow.to_id} token={token} clientId={clientId}/>
-                ))}
+                    {follows.map((follow) => (
+                        <VodPanel key={follow.to_id} channel={follow.to_id} token={token} clientId={clientId}/>
+                    ))}
                 </SimpleGrid>
             </main>
 
