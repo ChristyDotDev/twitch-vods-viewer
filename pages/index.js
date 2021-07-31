@@ -34,9 +34,9 @@ export default function Home({follows, token, clientId}) {
             <main>
                 <div>
                     {session ? (
-                        <button onClick={() => signOut()}>Signout</button>
+                        <button onClick={() => signOut()}>Log Out</button>
                     ) : (
-                        <button onClick={() => signIn()}>SignIn</button>
+                        <button onClick={() => signIn()}>Log In</button>
                     )}
                     {session && (
                         <div>
