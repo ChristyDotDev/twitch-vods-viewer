@@ -3,24 +3,23 @@ import TwitchApi from "/lib/TwitchApi";
 import VodPanel from "/components/VodPanel"
 import {SimpleGrid} from "@chakra-ui/react"
 import {signIn, signOut, useSession} from 'next-auth/client'
-import { useRouter } from 'next/router'
+import { getSession } from "next-auth/client"
 
 
-export async function getServerSideProps(context) {
-    // Get the user's session based on the request
-    console.log(context);
-    //const user2 = req.session.get('user')
-    const user2 = "Test";
-    if (!user2) {
+export async function getServerSideProps(req, res) {
+    const session = await getSession( req );
+    console.log(session)
+
+    if(!session?.user){
         return {
         redirect: {
-            destination: '/login',
+            destination: '/',
             permanent: false,
         },
         }
     }
 
-    const myUser = "ChristyC92" //FIXME - accept this from user?
+    const myUser = session.user.name
     const token = await TwitchApi.getAccessToken();
     const user = await TwitchApi.getUser(myUser, token.access_token);
     const userId = user.data[0].id
@@ -36,10 +35,6 @@ export async function getServerSideProps(context) {
 
 export default function Home({follows, token, clientId}) {
     const [session] = useSession();
-    const router = useRouter();
-    if(!session){
-        router.push("/")
-    }
 
     return (
         <div>

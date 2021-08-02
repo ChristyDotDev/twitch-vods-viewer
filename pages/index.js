@@ -1,22 +1,21 @@
 import Head from 'next/head'
-import TwitchApi from "../lib/TwitchApi";
-import VodPanel from "../components/VodPanel"
-import {SimpleGrid} from "@chakra-ui/react"
 import {signIn, signOut, useSession} from 'next-auth/client'
+import { getSession } from "next-auth/client"
 
 
-export async function getServerSideProps(context) {
-    const myUser = "ChristyC92" //FIXME - accept this from user?
-    const token = await TwitchApi.getAccessToken();
-    const user = await TwitchApi.getUser(myUser, token.access_token);
-    const userId = user.data[0].id
-    const user_follows = await TwitchApi.getUserFollows(userId, token.access_token)
-    return {
-        props: {
-            follows: user_follows,
-            token: token,
-            clientId: process.env.TWITCH_CLIENT_ID
+export async function getServerSideProps(req,res) {
+    const session = await getSession( req );
+
+    if(session?.user){
+        return {
+        redirect: {
+            destination: '/vods',
+            permanent: false,
         },
+        }
+    }
+    return {
+        props: {}
     }
 }
 
