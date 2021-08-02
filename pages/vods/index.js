@@ -1,11 +1,25 @@
 import Head from 'next/head'
-import TwitchApi from "../lib/TwitchApi";
-import VodPanel from "../components/VodPanel"
+import TwitchApi from "/lib/TwitchApi";
+import VodPanel from "/components/VodPanel"
 import {SimpleGrid} from "@chakra-ui/react"
 import {signIn, signOut, useSession} from 'next-auth/client'
+import { useRouter } from 'next/router'
 
 
 export async function getServerSideProps(context) {
+    // Get the user's session based on the request
+    console.log(context);
+    //const user2 = req.session.get('user')
+    const user2 = "Test";
+    if (!user2) {
+        return {
+        redirect: {
+            destination: '/login',
+            permanent: false,
+        },
+        }
+    }
+
     const myUser = "ChristyC92" //FIXME - accept this from user?
     const token = await TwitchApi.getAccessToken();
     const user = await TwitchApi.getUser(myUser, token.access_token);
@@ -21,7 +35,11 @@ export async function getServerSideProps(context) {
 }
 
 export default function Home({follows, token, clientId}) {
-    const [session] = useSession()
+    const [session] = useSession();
+    const router = useRouter();
+    if(!session){
+        router.push("/")
+    }
 
     return (
         <div>
@@ -44,6 +62,14 @@ export default function Home({follows, token, clientId}) {
                         </div>
                     )}
                 </div>
+                <h1>
+                    VODs from the last day
+                </h1>
+                <SimpleGrid columns={[1, 2, 3]} spacing="40px">
+                    {follows.map((follow) => (
+                        <VodPanel key={follow.to_id} channel={follow.to_id} token={token} clientId={clientId}/>
+                    ))}
+                </SimpleGrid>
             </main>
         </div>
     )
