@@ -1,30 +1,61 @@
-import { Flex, Heading } from "@chakra-ui/layout";
 import { useRouter } from "next/router";
-import Image from 'next/image'
-import {signIn, signOut, useSession} from 'next-auth/client';
+import Image from "next/image";
+import { signIn, signOut, useSession } from "next-auth/client";
+import React from "react";
+import { Heading, Flex, Text, Button } from "@chakra-ui/react";
 
 export default function Header() {
   const router = useRouter();
-  const [session] = useSession()
+  const [session] = useSession();
 
   return (
-    <Flex >
-      <Heading as="h3" size="lg" m={1} cursor="pointer" onClick={() => router.push("/")}>
-        Home
-      </Heading>
-      <div>
-        {session ? (
-            <button onClick={() => signOut()}>Log Out</button>
-        ) : (
-            <button onClick={() => signIn()}>Log In</button>
-        )}
-        {session && (
-            <div>
-                <small>Signed in as {session.user.name || session.user.email}</small>
-                <Image src={session.user.image} width='32px' height='32px'/>
-            </div>
-        )}
-      </div>
+    <Flex
+      as="nav"
+      align="center"
+      justify="space-between"
+      wrap="wrap"
+      padding={6}
+      background="#202736"
+    >
+      <Flex align="center" mr={4}>
+        <Heading
+          as="h1"
+          size="lg"
+          letterSpacing={"tighter"}
+          cursor="pointer"
+          onClick={() => router.push("/")}
+        >
+          Twitch Vods Viewer
+        </Heading>
+      </Flex>
+
+      {session ? (
+        <Flex align="center">
+          <Text margin="10px">{session.user.name || session.user.email}</Text>
+          <Image
+            src={session.user.image}
+            width="32px"
+            height="32px"
+            margin="10px"
+          />
+          <Button
+            variant="outline"
+            _hover={{ bg: "#2c354a", borderColor: "#2c354a" }}
+            margin="10px"
+            onClick={() => signOut()}
+          >
+            Log out
+          </Button>
+        </Flex>
+      ) : (
+        <Button
+          variant="outline"
+          _hover={{ bg: "#2c354a", borderColor: "#2c354a" }}
+          onClick={() => signIn()}
+        >
+          Log In
+        </Button>
+      )}
     </Flex>
   );
 }
