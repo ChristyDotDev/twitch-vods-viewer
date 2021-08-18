@@ -4,8 +4,8 @@ import Image from "next/image";
 import { Link, Text, Box } from "@chakra-ui/react";
 import moment from "moment";
 
-const imageHeight = 400;
-const imageWidth = 600;
+const imageHeight = 720;
+const imageWidth = 1280;
 
 const millisInDay = 86400000;
 
