@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/client";
-import { Box, Heading, Flex, Text, Button, Spacer } from "@chakra-ui/react";
-import { Stack, HStack, VStack } from "@chakra-ui/react";
+import { Box, Flex, Spacer, VStack, Link, Icon } from "@chakra-ui/react";
+import { FaGithub } from "react-icons/fa";
 
 export async function getServerSideProps(req, res) {
   const session = await getSession(req);
@@ -35,8 +35,9 @@ export default function Home({ follows, token, clientId }) {
         </Box>
         <Spacer />
         <Box h="40px">
-          View the source code{" "}
-          <a href="https://github.com/christytc10/twitch-vods-viewer">here</a>
+        <Link href="https://github.com/christytc10/twitch-vods-viewer" isExternal>
+          <Icon as={FaGithub}/> View Source Code
+        </Link>
         </Box>
       </VStack>
     </Flex>

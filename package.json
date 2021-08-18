@@ -18,7 +18,9 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "twitch": "^4.5.5",
-    "next-auth": "3.27.3"
+    "next-auth": "3.27.3",
+    "moment": "2.29.1",
+    "react-icons": "4.2.0"
   },
   "devDependencies": {
     "eslint": "7.29.0",

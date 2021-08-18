@@ -2,6 +2,7 @@ import TwitchApi from "../lib/TwitchApi";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Link, Text, Box } from "@chakra-ui/react";
+import moment from "moment";
 
 const imageHeight = 400;
 const imageWidth = 600;
@@ -19,6 +20,7 @@ export default function VodPanel(props) {
         props.clientId
       );
       const latestVod = vods.data[0];
+      console.log(latestVod);
       if (
         latestVod &&
         Date.now() - Date.parse(latestVod.created_at) < millisInDay &&
@@ -28,6 +30,7 @@ export default function VodPanel(props) {
           .replace("%{height}", imageHeight)
           .replace("%{width}", imageWidth);
         setVod(latestVod);
+        console.log(latestVod);
       }
     }
   });
@@ -53,7 +56,7 @@ export default function VodPanel(props) {
           <b>{vod.user_name}</b> - {vod.title}
         </Text>
         <Text>
-          {vod.created_at} - {vod.duration}
+          {moment(vod.created_at).fromNow()} - {vod.duration}
         </Text>
       </Box>
     </Link>
